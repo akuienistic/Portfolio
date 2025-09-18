@@ -1,13 +1,16 @@
+import { lazy, Suspense } from "react";
 import Navigation from "@/components/Navigation";
 import Hero from "@/components/Hero";
 import About from "@/components/About";
 import Services from "@/components/Services";
 import Skills from "@/components/Skills";
 import Projects from "@/components/Projects";
-import Blog from "@/components/Blog";
-import EmailSubscription from "@/components/EmailSubscription";
-import Contact from "@/components/Contact";
-import Footer from "@/components/Footer";
+import Loading from "@/components/Loading";
+
+const Blog = lazy(() => import("@/components/Blog"));
+const EmailSubscription = lazy(() => import("@/components/EmailSubscription"));
+const Contact = lazy(() => import("@/components/Contact"));
+const Footer = lazy(() => import("@/components/Footer"));
 
 const Index = () => {
   return (
@@ -19,11 +22,15 @@ const Index = () => {
         <Services />
         <Skills />
         <Projects />
-        <Blog />
-        <EmailSubscription />
-        <Contact />
+        <Suspense fallback={<Loading />}>
+          <Blog />
+          <EmailSubscription />
+          <Contact />
+        </Suspense>
       </main>
-      <Footer />
+      <Suspense fallback={<Loading />}>
+        <Footer />
+      </Suspense>
     </div>
   );
 };
