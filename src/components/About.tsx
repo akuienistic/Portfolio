@@ -32,7 +32,7 @@ const About = () => {
             </div>
 
             {/* Key Points */}
-            <div className="flex flex-wrap gap-4 pt-6">
+            <div className="flex flex-wrap gap-4 pt-6 justify-center w-full">
               <div className="flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full cursor-pointer">
                 <Code className="h-4 w-4 text-primary" />
                 <span className="text-sm font-medium">Full Stack Developer</span>

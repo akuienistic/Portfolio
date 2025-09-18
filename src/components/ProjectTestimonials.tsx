@@ -18,6 +18,10 @@ const testimonials = [
 export function ProjectTestimonials() {
   return (
     <div className="w-full max-w-4xl mx-auto mt-12">
+      <h3 className="text-4xl md:text-5xl font-bold mb-4 text-center text-foreground">
+        What <span className="text-gradient">Clients</span> Say
+      </h3>
+      <p className="flex justify-center align-item-center mb-8">Don't just take my word for it, here's what some of my clients have to say</p>
       <div className="flex flex-col md:flex-row gap-8 items-stretch animate-fade-in cursor-pointer">
         {testimonials.map((t, i) => (
           <div
