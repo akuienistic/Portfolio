@@ -1,0 +1,238 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Simon's Portfolio Design System - Modern & Professional */
+
+@layer base {
+  :root {
+    /* Core Background & Text */
+    --background: 0 0% 98%;
+    --foreground: 215 25% 27%;
+
+    /* Card Components */
+    --card: 0 0% 100%;
+    --card-foreground: 215 25% 27%;
+
+    /* Popover Components */
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 25% 27%;
+
+    /* Primary Brand - Deep Ocean Blue */
+    --primary: 217 91% 24%;
+    --primary-foreground: 0 0% 98%;
+    --primary-hover: 217 91% 20%;
+
+    /* Secondary - Soft Gray */
+    --secondary: 210 11% 96%;
+    --secondary-foreground: 215 25% 27%;
+
+    /* Muted Elements */
+    --muted: 210 11% 96%;
+    --muted-foreground: 215 16% 47%;
+
+    /* Accent - Teal/Cyan for CTAs */
+    --accent: 180 84% 17%;
+    --accent-foreground: 0 0% 98%;
+    --accent-hover: 180 84% 14%;
+
+    /* Status Colors */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 98%;
+
+    /* UI Elements */
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 217 91% 24%;
+
+    /* Design System Tokens */
+    --radius: 0.75rem;
+    --radius-sm: 0.5rem;
+    --radius-lg: 1rem;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(217 91% 24%), hsl(217 91% 30%));
+    --gradient-accent: linear-gradient(135deg, hsl(180 84% 17%), hsl(180 84% 22%));
+    --gradient-hero: linear-gradient(135deg, hsl(217 91% 24%), hsl(180 84% 17%));
+    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 100%), hsl(210 11% 98%));
+
+    /* Shadows */
+    --shadow-soft: 0 4px 12px -4px hsl(217 91% 24% / 0.15);
+    --shadow-medium: 0 8px 24px -8px hsl(217 91% 24% / 0.2);
+    --shadow-strong: 0 16px 40px -12px hsl(217 91% 24% / 0.25);
+
+    /* Animation Timings */
+    --transition-fast: 0.15s ease-out;
+    --transition-normal: 0.3s ease-out;
+    --transition-slow: 0.5s ease-out;
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    /* Core Background & Text */
+    --background: 215 28% 9%;
+    --foreground: 0 0% 95%;
+
+    /* Card Components */
+    --card: 215 28% 12%;
+    --card-foreground: 0 0% 95%;
+
+    /* Popover Components */
+    --popover: 215 28% 12%;
+    --popover-foreground: 0 0% 95%;
+
+    /* Primary Brand - Brighter for dark mode */
+    --primary: 217 91% 60%;
+    --primary-foreground: 215 28% 9%;
+    --primary-hover: 217 91% 55%;
+
+    /* Secondary - Dark Gray */
+    --secondary: 215 28% 16%;
+    --secondary-foreground: 0 0% 95%;
+
+    /* Muted Elements */
+    --muted: 215 28% 16%;
+    --muted-foreground: 215 20% 65%;
+
+    /* Accent - Brighter Teal */
+    --accent: 180 84% 40%;
+    --accent-foreground: 215 28% 9%;
+    --accent-hover: 180 84% 35%;
+
+    /* Status Colors */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --success: 142 76% 45%;
+    --success-foreground: 0 0% 98%;
+
+    /* UI Elements */
+    --border: 215 28% 20%;
+    --input: 215 28% 20%;
+    --ring: 217 91% 60%;
+
+    /* Gradients for dark mode */
+    --gradient-primary: linear-gradient(135deg, hsl(217 91% 60%), hsl(217 91% 55%));
+    --gradient-accent: linear-gradient(135deg, hsl(180 84% 40%), hsl(180 84% 35%));
+    --gradient-hero: linear-gradient(135deg, hsl(217 91% 60%), hsl(180 84% 40%));
+    --gradient-subtle: linear-gradient(180deg, hsl(215 28% 12%), hsl(215 28% 9%));
+
+    /* Shadows for dark mode */
+    --shadow-soft: 0 4px 12px -4px hsl(215 28% 5% / 0.3);
+    --shadow-medium: 0 8px 24px -8px hsl(215 28% 5% / 0.4);
+    --shadow-strong: 0 16px 40px -12px hsl(215 28% 5% / 0.5);
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-outfit;
+    font-feature-settings: 'rlig' 1, 'calt' 1;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  /* Hero Button Variant */
+  .btn-hero {
+    @apply inline-flex items-center justify-center rounded-lg bg-gradient-to-r from-primary to-accent px-8 py-4 text-lg font-semibold text-primary-foreground transition-all duration-300 hover:scale-105 hover:shadow-strong focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2;
+  }
+
+  /* Card Hover Effects */
+  .card-hover {
+    @apply transition-all duration-300 hover:scale-105 hover:shadow-medium;
+  }
+
+  /* Section Spacing */
+  .section-padding {
+    @apply px-6 py-16 lg:px-8 lg:py-24;
+  }
+
+  /* Text Gradients */
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent;
+  }
+
+  /* Smooth Animations */
+  .animate-fade-in {
+    animation: fade-in 0.6s ease-out forwards;
+  }
+
+  .animate-slide-up {
+    animation: slide-up 0.6s ease-out forwards;
+  }
+
+  .animate-scale-in {
+    animation: scale-in 0.4s ease-out forwards;
+  }
+}
+
+@layer utilities {
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
