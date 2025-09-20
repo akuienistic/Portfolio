@@ -11,16 +11,18 @@ const Blog = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Show only latest 3 blogs on homepage, all blogs on /blogs
+  const isAllBlogsPage = location.pathname === "/blogs";
+
   useEffect(() => {
-    fetch("http://localhost:5000/api/blogs")
+    const url = isAllBlogsPage ? "http://localhost:5000/api/blogs" : "http://localhost:5000/api/blogs/recent";
+    fetch(url)
       .then((res) => res.json())
       .then((data) => setBlogPosts(data))
       .catch(() => setBlogPosts([]));
-  }, []);
+  }, [isAllBlogsPage]);
 
-  // Show only latest 3 blogs on homepage, all blogs on /blogs
-  const isAllBlogsPage = location.pathname === "/blogs";
-  const postsToShow = isAllBlogsPage ? blogPosts : blogPosts.slice(0, 3);
+  const postsToShow = blogPosts;
 
   return (
     <section id="blog" className="section-padding bg-gradient-subtle">
@@ -44,31 +46,31 @@ const Blog = () => {
               style={{ animationDelay: `${index * 0.1}s` }}
               onClick={() => navigate(`/blogs/${post._id}`)}
             >
-              {/* Post Image */}
-              <div
-                className="relative h-48 overflow-hidden flex items-center justify-center bg-muted"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  navigate(`/blogs/${post._id}`);
-                }}
-                role="button"
-                tabIndex={0}
-                style={{ cursor: "pointer" }}
-              >
-                <img
-                  src={post.image}
-                  alt={post.title}
-                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                <Badge className="absolute top-4 left-4 bg-primary text-primary-foreground">{post.category}</Badge>
-              </div>
-
+              {post.image && (
+                <div
+                  className="relative h-48 overflow-hidden flex items-center justify-center bg-muted"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/blogs/${post._id}`);
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  style={{ cursor: "pointer" }}
+                >
+                  <img
+                    src={post.image}
+                    alt={post.title}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                  {post.category && <Badge className="absolute top-4 left-4 bg-primary text-primary-foreground">{post.category}</Badge>}
+                </div>
+              )}
               <CardHeader className="space-y-3">
                 <div className="flex items-center gap-4 text-xs text-muted-foreground">
                   <div className="flex items-center gap-1">
                     <Calendar className="h-3 w-3" />
-                    {new Date(post.date).toLocaleDateString()}
+                    {new Date(post.createdAt).toLocaleDateString()}
                   </div>
                   <div className="flex items-center gap-1">
                     <User className="h-3 w-3" />
@@ -82,10 +84,12 @@ const Blog = () => {
               </CardHeader>
 
               <CardContent className="space-y-4">
-                <p className="text-muted-foreground text-sm leading-relaxed">{post.snippet}</p>
+                <p className="text-muted-foreground text-sm leading-relaxed">{post.content.substring(0, 150)}...</p>
 
                 <div className="flex items-center justify-between pt-2">
-                  <span className="text-xs text-muted-foreground">{post.readTime}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {Math.ceil(post.content.split(" ").length / 200)} min read
+                  </span>
                   <Button
                     size="sm"
                     variant="ghost"

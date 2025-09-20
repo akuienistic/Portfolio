@@ -28,7 +28,7 @@ const Contact = () => {
   const [errors, setErrors] = useState<{ name?: boolean; email?: boolean; message?: boolean; subject?: boolean }>({});
   const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const newErrors: { name?: boolean; email?: boolean; message?: boolean; subject?: boolean } = {};
     if (!formData.name.trim()) newErrors.name = true;
@@ -47,19 +47,41 @@ const Contact = () => {
       });
       return;
     }
-    // For now, just log the form data
-    console.log("Form submitted:", formData);
-    toast({
-      title: "Message Sent!",
-      description: (
-        <span className="flex items-center gap-2 text-green-600">
-          <CheckCircle className="h-5 w-5" /> Thank you for reaching out. I'll get back to you soon.
-        </span>
-      ),
-    });
-    setFormData({ name: "", email: "", message: "", subject: "" });
-    setErrors({});
-    // In a real implementation, you'd send this to your backend
+    try {
+      const response = await fetch('http://localhost:5000/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Message Sent!",
+          description: (
+            <span className="flex items-center gap-2 text-green-600">
+              <CheckCircle className="h-5 w-5" /> Thank you for reaching out. I'll get back to you soon.
+            </span>
+          ),
+        });
+        setFormData({ name: "", email: "", message: "", subject: "" });
+        setErrors({});
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to send message');
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+      toast({
+        title: "Error",
+        description: (
+          <span className="flex items-center gap-2 text-red-600">
+            <XCircle className="h-5 w-5" /> {error instanceof Error ? error.message : 'Failed to send message. Please try again.'}
+          </span>
+        ),
+      });
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {

@@ -35,12 +35,12 @@ const BlogList = () => {
             >
               <div className="relative h-48 overflow-hidden flex items-center justify-center bg-muted">
                 <img
-                  src={post.image}
+                  src={post.image || ""}
                   alt={post.title}
                   className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                <Badge className="absolute top-4 left-4 bg-primary text-primary-foreground">{post.category}</Badge>
+                {post.category && <Badge className="absolute top-4 left-4 bg-primary text-primary-foreground">{post.category}</Badge>}
               </div>
               <CardHeader className="space-y-3">
                 <div className="flex items-center gap-4 text-xs text-muted-foreground">

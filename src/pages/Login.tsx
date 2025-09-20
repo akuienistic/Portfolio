@@ -39,20 +39,22 @@ const Login = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
-        credentials: "include",
       });
-      const data = await response.json();
-      if (data.success) {
+      if (response.ok) {
+        const data = await response.json();
+        // Store the JWT token
+        localStorage.setItem('token', data.token);
         toast({
           title: "Login Successful!",
           description: (
             <span className="flex items-center gap-2 text-green-600">
-              <CheckCircle className="h-5 w-5" /> Welcome back!
+              <CheckCircle className="h-5 w-5" /> Welcome back, {data.admin.name}!
             </span>
           ),
         });
         setTimeout(() => navigate("/dashboard"), 1000);
       } else {
+        const data = await response.json();
         toast({
           title: "Login Failed",
           description: (

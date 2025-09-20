@@ -13,14 +13,21 @@ const Dashboard = () => {
     window.scrollTo({ top: 0, behavior: "auto" });
   }, []);
   const navigate = useNavigate();
+
+  // Check if user is authenticated
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login');
+    }
+  }, [navigate]);
   const [form, setForm] = useState({
     title: "",
     snippet: "",
-    date: "",
+    content: "",
     author: "",
-    category: "",
     readTime: "",
-    image: "",
+    category: "",
     imageFile: null as File | null,
     imagePreview: "",
   });
@@ -30,11 +37,28 @@ const Dashboard = () => {
   const [blogs, setBlogs] = useState<any[]>([]);
   // Fetch blogs from backend on mount
   useEffect(() => {
-    fetch("http://localhost:5000/api/blogs")
-      .then((res) => res.json())
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+
+    fetch("http://localhost:5000/api/blogs", {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+      .then((res) => {
+        if (res.status === 401) {
+          localStorage.removeItem('token');
+          navigate('/login');
+          return;
+        }
+        return res.json();
+      })
       .then((data) => setBlogs(data))
       .catch(() => setBlogs([]));
-  }, []);
+  }, [navigate]);
   const [editIndex, setEditIndex] = useState<number | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -43,7 +67,7 @@ const Dashboard = () => {
       const file = files[0];
       const reader = new FileReader();
       reader.onloadend = () => {
-        setForm((prev) => ({ ...prev, imageFile: file, imagePreview: reader.result as string, image: "" }));
+        setForm((prev) => ({ ...prev, imageFile: file, imagePreview: reader.result as string }));
       };
       reader.readAsDataURL(file);
     } else {
@@ -54,12 +78,11 @@ const Dashboard = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // Validate fields
-    const requiredFields = ["title", "snippet", "date", "author", "category", "readTime"];
+    const requiredFields = ["title", "content"];
     const newErrors: { [key: string]: boolean } = {};
     requiredFields.forEach((field) => {
       if (!form[field].trim()) newErrors[field] = true;
     });
-    if (!form.imageFile && !form.imagePreview) newErrors.image = true;
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) {
       toast({
@@ -73,19 +96,28 @@ const Dashboard = () => {
       return;
     }
     // Prepare blog data
-    const blogData = {
-      ...form,
-      image: form.imagePreview || form.image,
-    };
+    const formData = new FormData();
+    formData.append('title', form.title);
+    formData.append('snippet', form.snippet);
+    formData.append('content', form.content);
+    formData.append('author', form.author);
+    formData.append('readTime', form.readTime);
+    formData.append('category', form.category);
+    if (form.imageFile) {
+      formData.append('image', form.imageFile);
+    }
     try {
       let res, updatedBlog;
       if (editIndex !== null) {
         // Update blog
         const blogId = blogs[editIndex]._id;
+        const token = localStorage.getItem('token');
         res = await fetch(`http://localhost:5000/api/blogs/${blogId}`, {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(blogData),
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+          body: formData,
         });
         if (!res.ok) throw new Error("Failed to update blog");
         updatedBlog = await res.json();
@@ -101,10 +133,13 @@ const Dashboard = () => {
         });
       } else {
         // Create blog
+        const token = localStorage.getItem('token');
         res = await fetch("http://localhost:5000/api/blogs", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(blogData),
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+          body: formData,
         });
         if (!res.ok) throw new Error("Failed to create blog");
         const newBlog = await res.json();
@@ -121,11 +156,10 @@ const Dashboard = () => {
       setForm({
         title: "",
         snippet: "",
-        date: "",
+        content: "",
         author: "",
-        category: "",
         readTime: "",
-        image: "",
+        category: "",
         imageFile: null,
         imagePreview: "",
       });
@@ -143,15 +177,28 @@ const Dashboard = () => {
   };
 
   const handleEdit = (idx: number) => {
-    setForm({ ...blogs[idx], imageFile: null, imagePreview: blogs[idx].image });
+    setForm({
+      title: blogs[idx].title,
+      snippet: blogs[idx].snippet || "",
+      content: blogs[idx].content,
+      author: blogs[idx].author,
+      readTime: blogs[idx].readTime || "",
+      category: blogs[idx].category || "",
+      imageFile: null,
+      imagePreview: blogs[idx].image || "",
+    });
     setEditIndex(idx);
   };
 
   const handleDelete = async (idx: number) => {
     const blogId = blogs[idx]._id;
+    const token = localStorage.getItem('token');
     try {
       const res = await fetch(`http://localhost:5000/api/blogs/${blogId}`, {
         method: "DELETE",
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
       });
       if (!res.ok) throw new Error("Failed to delete blog");
       setBlogs((prev) => prev.filter((_, i) => i !== idx));
@@ -201,34 +248,31 @@ const Dashboard = () => {
               rows={2}
               className={errors.snippet ? "border-red-500" : ""}
             />
-            <Input
-              name="date"
-              value={form.date}
+            <Textarea
+              name="content"
+              value={form.content}
               onChange={handleChange}
-              placeholder="Date (YYYY-MM-DD)"
-              type="date"
-              className={errors.date ? "border-red-500" : ""}
+              placeholder="Content"
+              rows={5}
+              className={errors.content ? "border-red-500" : ""}
             />
             <Input
               name="author"
               value={form.author}
               onChange={handleChange}
               placeholder="Author"
-              className={errors.author ? "border-red-500" : ""}
-            />
-            <Input
-              name="category"
-              value={form.category}
-              onChange={handleChange}
-              placeholder="Category"
-              className={errors.category ? "border-red-500" : ""}
             />
             <Input
               name="readTime"
               value={form.readTime}
               onChange={handleChange}
               placeholder="Read Time (e.g. 5 min read)"
-              className={errors.readTime ? "border-red-500" : ""}
+            />
+            <Input
+              name="category"
+              value={form.category}
+              onChange={handleChange}
+              placeholder="Category (e.g. Technology, Lifestyle)"
             />
             <div>
               <label className="block text-sm font-medium text-foreground mb-1">Image</label>
@@ -237,7 +281,6 @@ const Dashboard = () => {
                 accept="image/*"
                 name="image"
                 onChange={handleChange}
-                className={errors.image ? "border-red-500" : ""}
               />
               {form.imagePreview && (
                 <img
@@ -248,7 +291,7 @@ const Dashboard = () => {
               )}
             </div>
             <Button type="submit" className="w-full btn-hero group flex items-center justify-center gap-2">
-              Create Blog
+              {editIndex !== null ? "Update Blog" : "Create Blog"}
             </Button>
             {success && <div className="text-green-600 text-center font-semibold mt-2">{success}</div>}
           </form>
@@ -262,15 +305,16 @@ const Dashboard = () => {
                     key={idx}
                     className="bg-background/80 rounded-lg shadow p-4 flex flex-col md:flex-row gap-4 items-center"
                   >
-                    <img src={blog.image} alt={blog.title} className="w-24 h-24 object-cover rounded-md border" />
+                    {blog.image && (
+                      <img src={blog.image} alt={blog.title} className="w-24 h-24 object-cover rounded-md border" />
+                    )}
                     <div className="flex-1 text-left">
                       <h4 className="text-lg font-bold mb-1">{blog.title}</h4>
-                      <p className="text-muted-foreground mb-1">{blog.snippet}</p>
+                      <p className="text-muted-foreground mb-1">{blog.snippet || blog.content.substring(0, 100)}...</p>
                       <div className="flex flex-wrap gap-2 text-xs text-muted-foreground mb-1">
-                        <span>Date: {blog.date}</span>
+                        <span>Created: {new Date(blog.createdAt).toLocaleDateString()}</span>
                         <span>Author: {blog.author}</span>
-                        <span>Category: {blog.category}</span>
-                        <span>Read Time: {blog.readTime}</span>
+                        {blog.readTime && <span>Read Time: {blog.readTime}</span>}
                       </div>
                     </div>
                     <div className="flex flex-col gap-2">

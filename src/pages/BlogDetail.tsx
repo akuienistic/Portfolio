@@ -25,27 +25,35 @@ const BlogDetail = () => {
           Back to All Blogs
         </Button>
         <Card className="bg-card/50 backdrop-blur-sm border-border/50 overflow-hidden animate-fade-in">
-          <div className="relative h-64 overflow-hidden flex items-center justify-center bg-muted">
-            <img src={blog.image} alt={blog.title} className="h-full w-full object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-            <Badge className="absolute top-4 left-4 bg-primary text-primary-foreground">{blog.category}</Badge>
-          </div>
+          {blog.image && (
+            <div className="relative h-64 overflow-hidden flex items-center justify-center bg-muted">
+              <img src={blog.image} alt={blog.title} className="h-full w-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+            </div>
+          )}
           <CardHeader className="space-y-3">
             <div className="flex items-center gap-4 text-xs text-muted-foreground">
               <div className="flex items-center gap-1">
                 <Calendar className="h-3 w-3" />
-                {new Date(blog.date).toLocaleDateString()}
+                {new Date(blog.createdAt).toLocaleDateString()}
               </div>
               <div className="flex items-center gap-1">
                 <User className="h-3 w-3" />
                 {blog.author}
               </div>
+              {blog.readTime && (
+                <div className="flex items-center gap-1">
+                  <span>{blog.readTime}</span>
+                </div>
+              )}
             </div>
             <CardTitle className="text-2xl font-bold leading-tight">{blog.title}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <p className="text-muted-foreground text-lg leading-relaxed">{blog.snippet}</p>
-            <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: blog.content || "" }} />
+            {blog.snippet && <p className="text-muted-foreground text-lg leading-relaxed">{blog.snippet}</p>}
+            <div className="prose max-w-none">
+              <p className="text-muted-foreground text-lg leading-relaxed whitespace-pre-wrap">{blog.content}</p>
+            </div>
           </CardContent>
         </Card>
       </div>
